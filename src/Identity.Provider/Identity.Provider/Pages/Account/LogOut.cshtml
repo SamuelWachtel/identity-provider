@@ -1,0 +1,9 @@
+@page
+@model LogoutModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+<form method="post" asp-page-handler="Logout">
+    @Html.AntiForgeryToken()
+    <p>Are you sure you want to log out?</p>
+    <button type="submit">Log out</button>
+</form>

@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "nDoReOtT8g8FMWaYVb+eEC8sK2fD3HU4BvvjSsrDJ3A=",
+  "Source": "IdentityProvider",
+  "BasePath": "_content/IdentityProvider",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

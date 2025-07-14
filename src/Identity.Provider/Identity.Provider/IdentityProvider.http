@@ -1,0 +1,27 @@
+### 1) Test Authorization Endpoint (OpenId Connect login start - interactive)
+GET https://localhost:7056/connect/authorize?client_id=my-public-client&redirect_uri=https://localhost:7104/signin-oidc&response_type=code&scope=openid%20profile%20email&state=12345&code_challenge=...&code_challenge_method=S256
+
+###
+
+### 2) Test Token Endpoint (exchange auth code or password for tokens)
+
+# Example for Resource Owner Password Credentials Grant (testing only)
+POST https://localhost:7056/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username=user&password=Pass123$&client_id=my-public-client&scope=openid profile email
+
+###
+
+### 3) Test UserInfo Endpoint (requires valid access token)
+GET https://localhost:7056/connect/userinfo
+Accept: application/json
+Authorization: Bearer CfDJ8D55XVFMmvpEoZkrASfQ0dn4__b84hF3k--hF2KEyJ1mTqIbjFqp8ZctRIX6TCMtC2wmMhcLiLzdZVU52fmAPty7X1PuA7T65_lCF3VTA_KZ9_pCm7ObBrYwlrQM91lNeUJxN0hAcgEvoeXVrZy1vyZJ147ztGVHTeTQGrXV5dt4YDyzdu0KL14FhvZKVv3Sqyw5oFBABg8MtHpJZXEP6VptXTlFxgGApewjQfOw8JGAsnwL1gSuUwhbc2Vlk-N8IoyMbyQjcZwdS8cMckhs4jTzA6ES22qhdEyGgxADhmJcHa2G7TC2aRShLVfuNdQKBi7K6zYTR6RFZ4nq_kK1Vzf1hL00Cv3nW5z6YlhYZHKfuFiNiRsxZK3p7QZ_m7OAYGErlUD4zfO9mmptjxhVphMSvi4xKnqKT4mLDW8sAqxEdXgwe8STv_owdd4PN_V-lu6LLg-sH3szPvApGjexua6ALadiu3l4mwoc3fiiVtLxjcJgrzn4o1FMpSwxDuTqySinGvxDjqfRfyMZ6P8E832dxSjo_uLKRf27OrKSxZHBUvODqh4s8S4HZ-mkrekbIxEUhUa2Lg1pPwbfuV149E-m6pPmZASGf4JpuMUJtbst_F2Etreg-Wf-B_GUyQRcBUYwaBJg7oCjpj6DQ18AkU3v1SDSfciBgYWxNN57_Twd
+
+###
+
+### 4) Test Logout Endpoint
+
+GET https://localhost:7056/connect/logout?id_token_hint=eyJhbGciOi...&post_logout_redirect_uri=https://localhost:7104/cs/signout-callback-oidc&state=xyz123
+
+###

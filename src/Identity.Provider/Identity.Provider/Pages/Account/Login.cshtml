@@ -1,0 +1,35 @@
+@page
+@model IdentityProvider.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<h1>Log in</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <div>
+        <label asp-for="Input.Username"></label>
+        <input asp-for="Input.Username" />
+        <span asp-validation-for="Input.Username"></span>
+    </div>
+    <div>
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" type="password" />
+        <span asp-validation-for="Input.Password"></span>
+    </div>
+    <button type="submit">Log in</button>
+</form>
+
+<partial name="_ValidationScriptsPartial" />
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color:red">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}

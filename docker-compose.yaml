@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: erp_postgres
+    environment:
+      POSTGRES_DB: erp_identity
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+      
+  identity-provider:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=erp_identity;Username=postgres;Password=postgres"
+      ASPNETCORE_ENVIRONMENT: Development
+      OpenIddict__Client__ClientId: "my-override-client-id"
+      OpenIddict__Client__RedirectUris__0: "https://localhost:7104/signin-oidc"
+      OpenIddict__Client__RedirectUris__1: "https://localhost:7104/cs/signin-oidc"
+      OpenIddict__Client__PostLogoutRedirectUris__0: "https://localhost:7104/signout-callback-oidc"
+      OpenIddict__Client__PostLogoutRedirectUris__1: "https://localhost:7104/cs/signout-callback-oidc"
+    ports:
+      - "5013:8080"
