@@ -24,6 +24,9 @@ public static class DbInitializer
                 Permissions.GrantTypes.AuthorizationCode,
                 Permissions.GrantTypes.Password,
                 Permissions.GrantTypes.ClientCredentials,
+                Permissions.GrantTypes.TokenExchange,
+                Permissions.GrantTypes.RefreshToken,
+                Permissions.GrantTypes.Implicit,
 
                 Permissions.ResponseTypes.Code,
                 Scopes.OpenId,

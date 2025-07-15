@@ -5,52 +5,59 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IdentityProvider.Pages.Account;
 
+[ValidateAntiForgeryToken]
 public class LoginModel : PageModel
 {
     private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public LoginModel(SignInManager<IdentityUser> signInManager)
+    public LoginModel(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager)
     {
         _signInManager = signInManager;
+        _userManager = userManager;
     }
 
     [BindProperty]
     public InputModel Input { get; set; } = new();
 
-    [BindProperty(SupportsGet = true)]
     public string? ReturnUrl { get; set; }
 
     public class InputModel
     {
-        [Required]
-        public string Username { get; set; } = string.Empty;
-
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = string.Empty;
+        [Required] public string Username { get; set; } = "";
+        [Required] public string Password { get; set; } = "";
     }
 
-    public void OnGet()
+    public void OnGet(string? returnUrl = null)
     {
-        // Nothing to do here, form will render
+        ReturnUrl = returnUrl ?? "/";
     }
-
-    public async Task<IActionResult> OnPostAsync()
+    
+    public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
+        ReturnUrl = returnUrl ?? "/";
+
         if (!ModelState.IsValid)
-            return Page();
-
-        var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, isPersistent: false, lockoutOnFailure: false);
-        if (result.Succeeded)
         {
-            // Required: redirect back to OpenIddict's authorize endpoint
-            if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
-                return LocalRedirect(ReturnUrl);
-
-            return RedirectToPage("/Index"); // fallback if no return URL
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+            // Log errors or inspect in debugger
+            foreach(var error in errors)
+            {
+                Console.WriteLine(error);
+            }
+            return Page();
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        return Page();
+        var user = await _userManager.FindByNameAsync(Input.Username);
+        if (user == null || !await _userManager.CheckPasswordAsync(user, Input.Password))
+        {
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return Page();
+        }
+
+        // ✅ Important: This signs in the user with the correct Identity scheme
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
+        return LocalRedirect(ReturnUrl);
     }
 }
