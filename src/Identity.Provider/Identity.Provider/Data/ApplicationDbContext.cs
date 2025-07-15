@@ -15,10 +15,7 @@ namespace IdentityProvider.Data
         {
             base.OnModelCreating(builder);
 
-            // Set the default schema to "public" (or your preferred schema)
             builder.HasDefaultSchema("public");
-
-            // ... other configuration
         }
     }
 }

@@ -7,21 +7,33 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
-      
+      - "5430:5432"
+
   identity-provider:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: erp_identity_provider
     depends_on:
       - postgres
     environment:
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=erp_identity;Username=postgres;Password=postgres"
       ASPNETCORE_ENVIRONMENT: Development
       OpenIddict__Client__ClientId: "my-override-client-id"
-      OpenIddict__Client__RedirectUris__0: "https://localhost:7104/signin-oidc"
-      OpenIddict__Client__RedirectUris__1: "https://localhost:7104/cs/signin-oidc"
-      OpenIddict__Client__PostLogoutRedirectUris__0: "https://localhost:7104/signout-callback-oidc"
-      OpenIddict__Client__PostLogoutRedirectUris__1: "https://localhost:7104/cs/signout-callback-oidc"
+      OpenIddict__Client__RedirectUris__0: "https://localhost/signin-oidc"
+      OpenIddict__Client__RedirectUris__1: "https://localhost/cs/signin-oidc"
+      OpenIddict__Client__PostLogoutRedirectUris__0: "https://localhost/signout-callback-oidc"
+      OpenIddict__Client__PostLogoutRedirectUris__1: "https://localhost/cs/signout-callback-oidc"
+    expose:
+      - "8080"
+
+  nginx:
+    image: nginx:alpine
+    container_name: erp_nginx
+    depends_on:
+      - identity-provider
     ports:
-      - "5013:8080"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro

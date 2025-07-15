@@ -1,13 +1,9 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -74,10 +70,8 @@ public class AuthorizationController : Controller
         var request = HttpContext.GetOpenIddictServerRequest() ??
                       throw new InvalidOperationException("OpenIddict request is null");
 
-        // If user is not authenticated, redirect to login page
         if (!User.Identity?.IsAuthenticated ?? true)
         {
-            // Redirect to your login page, preserving the original return URL
             var returnUrl = Request.Path + QueryString.Create(Request.Query);
             return Challenge(
                 authenticationSchemes: IdentityConstants.ApplicationScheme,
@@ -87,7 +81,6 @@ public class AuthorizationController : Controller
                 });
         }
 
-        // User is authenticated, create claims principal for the authorization code
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -95,16 +88,12 @@ public class AuthorizationController : Controller
         }
 
         var principal = await _signInManager.CreateUserPrincipalAsync(user);
-
-        // Set scopes requested by client
+        
         principal.SetScopes(request.GetScopes());
         principal.SetResources("erp_api");
-
-        // Claims required by OpenID Connect
         principal.SetClaim(Claims.Subject, await _userManager.GetUserIdAsync(user));
         principal.SetClaim(Claims.Name, user.UserName!);
 
-        // Returning SignIn issues the authorization code
         return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
@@ -119,11 +108,8 @@ public class AuthorizationController : Controller
             return BadRequest("Invalid logout request.");
         }
 
-        // Optionally: sign out the user
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); 
-        //await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
 
-        // Redirect to the original post-logout URI
         return SignOut(new AuthenticationProperties
         {
             RedirectUri = request.PostLogoutRedirectUri

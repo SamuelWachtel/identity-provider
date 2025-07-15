@@ -39,13 +39,11 @@ public static class DbInitializer
             }
         };
 
-        // Apply redirect URIs
         foreach (var uri in settings.RedirectUris)
         {
             descriptor.RedirectUris.Add(new Uri(uri));
         }
 
-        // Apply post logout redirect URIs
         foreach (var uri in settings.PostLogoutRedirectUris)
         {
             descriptor.PostLogoutRedirectUris.Add(new Uri(uri));
@@ -57,11 +55,9 @@ public static class DbInitializer
         }
         else
         {
-            // Update the existing client to ensure properties are in sync
             await appManager.UpdateAsync(client, descriptor);
         }
 
-        // Seed a test user
         var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
         var userName = "user";
         var password = "Pass123$";
@@ -84,7 +80,6 @@ public static class DbInitializer
             }
         }
 
-        // Debug output of current redirect URIs
         var registeredClient = await appManager.FindByClientIdAsync(settings.ClientId);
         var uris = await appManager.GetPostLogoutRedirectUrisAsync(registeredClient);
 

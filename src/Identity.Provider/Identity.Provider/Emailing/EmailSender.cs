@@ -6,7 +6,6 @@ public class EmailSender : IEmailSender
 {
     public Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        // Use your SMTP or email service here
         Console.WriteLine($"Sending email to {email}: {subject} - {htmlMessage}");
         return Task.CompletedTask;
     }
