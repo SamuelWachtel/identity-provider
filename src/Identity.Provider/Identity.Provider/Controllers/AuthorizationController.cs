@@ -47,10 +47,24 @@ public class AuthorizationController : Controller
 
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
+        else if (request.IsAuthorizationCodeGrantType())
+        {
+            var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
+            if (result?.Principal != null)
+            {
+                return SignIn(result.Principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+            else if (result?.Failure != null)
+            {
+                return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
+            return BadRequest(new { error = "invalid_grant" });
+        }
         return BadRequest(new { error = "unsupported_grant_type" });
     }
-    
+
     [HttpGet("~/connect/authorize")]
     public async Task<IActionResult> Authorize()
     {
@@ -103,8 +117,8 @@ public class AuthorizationController : Controller
         }
 
         // Optionally: sign out the user
-        //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); 
+        //await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
 
         // Redirect to the original post-logout URI
         return SignOut(new AuthenticationProperties
@@ -112,5 +126,4 @@ public class AuthorizationController : Controller
             RedirectUri = request.PostLogoutRedirectUri
         }, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
-
 }

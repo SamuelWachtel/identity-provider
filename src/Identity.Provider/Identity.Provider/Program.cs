@@ -36,7 +36,7 @@ builder.Services.AddOpenIddict()
             .SetTokenEndpointUris("/connect/token")
             .SetUserInfoEndpointUris("/connect/userinfo")
             .SetEndSessionEndpointUris("/connect/logout");
-        
+
         // Configure authorization code flow with PKCE
         options.AllowAuthorizationCodeFlow()
             .RequireProofKeyForCodeExchange();
@@ -61,7 +61,21 @@ builder.Services.AddOpenIddict()
 
         options.UseDataProtection();
     });
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.Cookie.Name = "Identity.Application";
 
+    // This MUST be None if using cross-site or different ports (e.g. client on 7104, IdP on 7056)
+    options.Cookie.SameSite = SameSiteMode.None;
+
+    // Cookies must be Secure for SameSite=None
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromHours(1);
+    options.SlidingExpiration = true;
+});
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 var clientSettings = builder.Configuration.GetSection("OpenIddict:Client").Get<OpenIdDictClientSettings>();
@@ -71,11 +85,17 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.SeedAsync(scope.ServiceProvider, clientSettings);
 }
 app.UseStaticFiles();
+
 app.UseRouting();
+
+// Authentication must come before anything that needs user info
+app.UseAntiforgery();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+// Endpoint mapping must come after auth middlewares
 app.MapRazorPages();
+app.MapControllers();
+
 app.Run();
