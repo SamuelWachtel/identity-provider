@@ -1,9 +1,12 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -107,8 +110,10 @@ public class AuthorizationController : Controller
         {
             return BadRequest("Invalid logout request.");
         }
+        Response.Cookies.Delete(".AspNetCore.Identity.Application");
 
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); 
+        //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); 
+        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme); // "Identity.Application"
 
         return SignOut(new AuthenticationProperties
         {

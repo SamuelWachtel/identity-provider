@@ -20,10 +20,12 @@ services:
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=erp_identity;Username=postgres;Password=postgres"
       ASPNETCORE_ENVIRONMENT: Development
       OpenIddict__Client__ClientId: "my-override-client-id"
-      OpenIddict__Client__RedirectUris__0: "https://localhost/signin-oidc"
-      OpenIddict__Client__RedirectUris__1: "https://localhost/cs/signin-oidc"
+      OpenIddict__Client__RedirectUris__0: "https://localhost:7104/signin-oidc"
+      OpenIddict__Client__RedirectUris__1: "https://localhost:7104/cs/signin-oidc"
       OpenIddict__Client__PostLogoutRedirectUris__0: "https://localhost/signout-callback-oidc"
       OpenIddict__Client__PostLogoutRedirectUris__1: "https://localhost/cs/signout-callback-oidc"
+      OpenIddict__Client__PostLogoutRedirectUris__2:
+          "https://localhost:7104/login"
     expose:
       - "8080"
 

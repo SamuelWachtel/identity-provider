@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace IdentityProvider.Emailing;
