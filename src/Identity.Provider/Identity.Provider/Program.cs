@@ -1,9 +1,14 @@
+using System;
 using IdentityProvider.Data;
 using IdentityProvider.Emailing;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,7 +71,7 @@ builder.Services.AddOpenIddict()
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
-    options.Cookie.Name = "Identity.Application";
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
 
     options.Cookie.SameSite = SameSiteMode.None;
 
